@@ -1,13 +1,12 @@
 ﻿using System.Reflection;
 using System.Resources;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("LineRunner")]
-[assembly: AssemblyProduct("LineRunner")]
+[assembly: AssemblyTitle("Doodle Run")]
+[assembly: AssemblyProduct("Doodle Run")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
@@ -32,5 +31,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.0")]
+[assembly: AssemblyVersion("1.2")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]

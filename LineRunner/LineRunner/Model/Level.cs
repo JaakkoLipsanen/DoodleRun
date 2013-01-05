@@ -7,6 +7,7 @@ using Flai.Graphics;
 using Flai.Misc;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace LineRunner.Model
 {
@@ -31,7 +32,6 @@ namespace LineRunner.Model
 
         private Color _phoneAccentColor;
         private Texture2D _groundTexture;
-        private Texture2D _backgroundTexture;
 
         private readonly Dictionary<TileType, SpriteSheet> _tileSpriteSheets = new Dictionary<TileType, SpriteSheet>();
         private readonly Dictionary<TileType, Color[]> _tilePixelDatas = new Dictionary<TileType, Color[]>();
@@ -45,10 +45,9 @@ namespace LineRunner.Model
 
         public void LoadContent(FlaiContentManager contentManager)
         {
-            _backgroundTexture = contentManager.LoadTexture("Gameplay/Background");
             _groundTexture = contentManager.LoadTexture("Gameplay/Ground");
 
-            SpriteSheet spikeSpriteSheet = new SpriteSheet(contentManager.LoadTexture("Gameplay/Spike"), 3, 1);
+            SpriteSheet spikeSpriteSheet = new SpriteSheet(contentManager.LoadTexture("Gameplay/Spike"), 1, 1);
             _tileSpriteSheets.Add(TileType.Spike, spikeSpriteSheet);
 
             SpriteSheet blockSpriteSheet = new SpriteSheet(contentManager.LoadTexture("Gameplay/Block"), 1, 1);
@@ -62,14 +61,9 @@ namespace LineRunner.Model
 
         #region Draw
 
-        public void DrawBackground(GraphicsContext graphicsContext, Camera2D camera)
-        {
-            graphicsContext.SpriteBatch.DrawCentered(_backgroundTexture, camera.Position);
-            this.DrawTiles(graphicsContext, camera);
-        }
-
         public void Draw(GraphicsContext graphicsContext, Camera2D camera)
-        {           
+        {
+            this.DrawTiles(graphicsContext, camera);
             this.DrawGround(graphicsContext, camera);          
         }
 
@@ -78,8 +72,15 @@ namespace LineRunner.Model
             RectangleF cameraArea = camera.GetArea(graphicsContext.GraphicsDevice);
 
             float firstX = cameraArea.Left - camera.Position.X % 800;
-            graphicsContext.SpriteBatch.Draw(_groundTexture, new Vector2(firstX, LineRunnerGlobals.GroundLevel - LineRunnerGlobals.GroundLevelDrawOffset), Color.White);
-            graphicsContext.SpriteBatch.Draw(_groundTexture, new Vector2(firstX + 800, LineRunnerGlobals.GroundLevel - LineRunnerGlobals.GroundLevelDrawOffset), Color.White);
+            graphicsContext.SpriteBatch.Draw(
+                _groundTexture, 
+                new Vector2(cameraArea.Left, LineRunnerGlobals.GroundLevel - LineRunnerGlobals.GroundLevelDrawOffset), new Rectangle((int)(cameraArea.Left - firstX), 0, _groundTexture.Width - (int)(cameraArea.Left - firstX), 
+                    _groundTexture.Height), Color.White);
+
+            graphicsContext.SpriteBatch.Draw(
+                _groundTexture,
+                new Vector2(firstX + 800, LineRunnerGlobals.GroundLevel - LineRunnerGlobals.GroundLevelDrawOffset), new Rectangle(0, 0, (int)(cameraArea.Right - (firstX + 800)) + 1, _groundTexture.Height), 
+                Color.White);
         }
 
         private void DrawTiles(GraphicsContext graphicsContext, Camera2D camera)
@@ -122,7 +123,7 @@ namespace LineRunner.Model
                     if (groundTile != TileType.Air)
                     {
                         Rectangle rect = new Rectangle((int)Math.Round(xPosition), LineRunnerGlobals.GroundLevel - LineRunnerGlobals.TileSize, LineRunnerGlobals.TileSize, LineRunnerGlobals.TileSize);
-                        this.DrawTile(graphicsContext, rect, _tileSpriteSheets[groundTile], Color.White);
+                        this.DrawTile(graphicsContext, rect, _tileSpriteSheets[groundTile], Color.Red);
                     }
                 }
 
@@ -217,13 +218,31 @@ namespace LineRunner.Model
 
         private void RandomizeSectors()
         {
-            const int SectorCount = 100;
-            const int MinimumSpaceBetweenSectors = 0;
+            Stopwatch sw = Stopwatch.StartNew();
+            const int SuperEasySectors = 2;
+            const int EasySectors = 5;
+            const int SectorCount = 512;
+            const int MinimumSpaceBetweenSectors = 3;
+
+            int targetSectorCount = _sectorOrder.Count + SectorCount;
 
             Random random = new Random(Global.Random.Next());
-            while (_sectorOrder.Count < SectorCount)
+            while (_sectorOrder.Count < targetSectorCount)
             {
-                int sector = random.Next(1, _sectorProvider.SectorCount);
+                int sector = -1;
+                if(_sectorOrder.Count < SuperEasySectors)
+                {
+                    sector = random.Next(HardCodedSectorProvider.SuperEasySectors.Min, HardCodedSectorProvider.SuperEasySectors.Max);
+                }
+                else if (_sectorOrder.Count < EasySectors)
+                {
+                    sector = random.Next(HardCodedSectorProvider.EasySectors.Min, HardCodedSectorProvider.EasySectors.Max);
+                }
+                else
+                {
+                    sector = random.Next(HardCodedSectorProvider.EasySectors.Max, _sectorProvider.SectorCount);
+                }
+
                 bool flag = false;
                 for (int i = Math.Max(0, _sectorOrder.Count - MinimumSpaceBetweenSectors); i < _sectorOrder.Count; i++)
                 {
@@ -239,19 +258,22 @@ namespace LineRunner.Model
                     _sectorOrder.Add(sector);
                 }
             }
+
+            Debug.WriteLine(sw.Elapsed.TotalSeconds);
         }
 
         private void UpdateSectors(RectangleF cameraArea)
         {
             // If current sector is completely on left side of the camera, move to next sector
-            int sectorWidthInPixels = this.TileToPixels(this.GetSector(_currentSectorIndex).Width * LineRunnerGlobals.TileSize);
+            int sectorWidthInPixels = this.GetSector(_currentSectorIndex).Width * LineRunnerGlobals.TileSize;
             while (_currentSectorX + sectorWidthInPixels  < cameraArea.Left)
             {
                 _currentSectorX += this.GetSector(_currentSectorIndex).Width * LineRunnerGlobals.TileSize;
                 _currentSectorIndex++;
+
+                // I'm not sure if this even can be called or if this works properly
                 if (_currentSectorIndex >= _sectorOrder.Count)
                 {
-                    _sectorOrder.Clear();
                     this.RandomizeSectors();
                 }
             }
@@ -261,18 +283,13 @@ namespace LineRunner.Model
             int tempSectorIndex = _currentSectorIndex;
             while (tempSectorX + this.GetSector(tempSectorIndex).Width * LineRunnerGlobals.TileSize < cameraArea.Right)
             {
+                tempSectorX += this.GetSector(tempSectorIndex).Width * LineRunnerGlobals.TileSize;
                 tempSectorIndex++;
                 if (tempSectorIndex >= _sectorOrder.Count)
                 {
                     // Not sure if this is right. Possibly _currentSectorIndex - 1
-                    _sectorOrder.RemoveRange(0, _currentSectorIndex);
                     this.RandomizeSectors();
-
-                    tempSectorIndex -= _currentSectorIndex;
-                    _currentSectorIndex = 0;
                 }
-
-                tempSectorX += this.GetSector(tempSectorIndex).Width * LineRunnerGlobals.TileSize;
             }
         }
 

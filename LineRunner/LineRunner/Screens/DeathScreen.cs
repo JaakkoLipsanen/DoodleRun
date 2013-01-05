@@ -1,4 +1,3 @@
-using System;
 using Flai;
 using Flai.Content;
 using Flai.Graphics;
@@ -10,6 +9,7 @@ using Flai.Ui;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mogade;
+using System;
 
 namespace LineRunner.Screens
 {
@@ -17,6 +17,8 @@ namespace LineRunner.Screens
     {
         private TexturedButton _restartButton;
         private TexturedButton _mainMenuButton;
+
+        private Texture2D _background;
 
         private readonly BasicUiContainer _uiContainer = new BasicUiContainer();
         
@@ -47,10 +49,11 @@ namespace LineRunner.Screens
             }
 
             FlaiContentManager contentManager = base.ContentProvider.DefaultManager;
-            Rectangle leftButtonRect = new Rectangle(200, 190, 128, 128);
-            Rectangle rightButtonRect = new Rectangle(400 + (400 - (200 + 128)), 190, 128, 128);
+            
+            Rectangle leftButtonRect = new Rectangle(400 + (400 - (200 + 128)), 190, 128, 128);
+            Rectangle rightButtonRect = new Rectangle(200, 190, 128, 128);
 
-            _restartButton = new TexturedButton(leftButtonRect, new Sprite(contentManager.LoadTexture("PauseScreen/Restart")));
+            _restartButton = new TexturedButton(leftButtonRect, new Sprite(contentManager.LoadTexture("PauseScreen/Play")));
             _restartButton.Tap += (o, e) =>
             {
                 _gamePlayScreen.RestartGame();
@@ -65,6 +68,8 @@ namespace LineRunner.Screens
             };
             _uiContainer.Add(_mainMenuButton);
 
+            _background = contentManager.LoadTexture("PauseScreen/Background");
+
             IFontProvider fontProvider = base.Services.GetService<IFontProvider>();
             _font = fontProvider["Crayon32"];
 
@@ -73,6 +78,11 @@ namespace LineRunner.Screens
 
         protected override void Update(UpdateContext updateContext, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
+            if (updateContext.InputState.IsBackButtonPressed)
+            {
+                LoadingScreen.Load(base.ScreenManager, false, new MainMenuScreen());
+            }
+
             _uiContainer.Update(updateContext);
             base.Update(updateContext, otherScreenHasFocus, coveredByOtherScreen);
         }
@@ -81,8 +91,8 @@ namespace LineRunner.Screens
         {
             graphicsContext.SpriteBatch.Begin();
 
-            graphicsContext.SpriteBatch.Draw(graphicsContext.BlankTexture, new Rectangle(100, 100, 800 - 100 * 2, 480 - 100 * 2), Color.Black * 0.5f);
-            graphicsContext.SpriteBatch.DrawStringCentered(_font, string.Format("Score: {0}", _score), new Vector2(400, 150), Color.White);
+            graphicsContext.SpriteBatch.DrawCentered(_background, new Vector2(400, 240));
+            graphicsContext.SpriteBatch.DrawStringCentered(_font, string.Format("Score: {0}", _score), new Vector2(400, 160), Color.White);
 
             _uiContainer.Draw(graphicsContext, true);
 

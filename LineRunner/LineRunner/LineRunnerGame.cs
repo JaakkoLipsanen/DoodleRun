@@ -1,4 +1,3 @@
-using System;
 using Flai;
 using Flai.Advertisiments;
 using Flai.Graphics;
@@ -7,6 +6,8 @@ using Flai.Mogade;
 using LineRunner.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Net;
 
 namespace LineRunner
 {
@@ -36,6 +37,7 @@ namespace LineRunner
             {
                 Enabled = true,
                 Visible = false,
+                AdPosition = LineRunnerGlobals.AdCenterPosition,
             };
             base.Components.Add(_adManager);
 
@@ -46,20 +48,21 @@ namespace LineRunner
 
             base.TargetFrameRate = 60;
             base.IsFixedTimeStep = false;
+
+            LineRunnerGlobals.IsFirstLaunch = _settingsManager.Settings.FirstLaunch;
         }
 
         protected override void InitializeInner()
         {
             _adManager.InitializeMicrosoftAds(LineRunnerGame.PubCenterAppId, LineRunnerGame.PubCenterAdUnitId);
-            _adManager.InitializeAdDuplexAds(LineRunnerGame.AdDuplexAppId);
 
-            _soundEffectManager.Enabled = _settingsManager.Settings.IsAudioOn;
+            _soundEffectManager.Enabled = false;
         }
 
         protected override void LoadContentInner()
         {
-            BasicHouseAd houseAd = new BasicHouseAd("");
-            houseAd.LoadContent(new Sprite(base.Content.LoadTexture("DoodleRunnerPromo"))); // TODO: change
+            BasicHouseAd houseAd = new BasicHouseAd("2c125639-a3cd-4588-ba99-bc78cc2fc2f9");
+            houseAd.LoadContent(new Sprite(base.Content.LoadTexture("BoxStrikePromo")));
             _adManager.InitializeHouseAds(houseAd);
         }
 
@@ -92,14 +95,6 @@ namespace LineRunner
         protected override void OnPreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
         {
             e.GraphicsDeviceInformation.PresentationParameters.PresentationInterval = PresentInterval.One;
-        }
-
-        protected override void OnActivated(object sender, EventArgs args)
-        {
-            if (_soundEffectManager != null && _settingsManager != null)
-            {
-                _soundEffectManager.Enabled = _settingsManager.Settings.IsAudioOn;
-            }
         }
 
         protected override void OnDeactivated(object sender, EventArgs args)

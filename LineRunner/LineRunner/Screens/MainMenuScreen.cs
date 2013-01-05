@@ -52,7 +52,14 @@ namespace LineRunner.Screens
             TextButton playButton = new TextButton(new Vector2(400f, 160), "Play") { Font = "Crayon64", Color = new Color(226, 105, 105) };
             playButton.Tap += (o, e) =>
                 {
-                    LoadingScreen.Load(base.ScreenManager, false, new GameplayScreen());
+                    if (LineRunnerGlobals.IsFirstLaunch && !LineRunnerGlobals.HasShownHelpScreen)
+                    {
+                        LoadingScreen.Load(base.ScreenManager, false, new GameplayScreen(), new HelpScreen());
+                    }
+                    else
+                    {
+                        LoadingScreen.Load(base.ScreenManager, false, new GameplayScreen());
+                    }
                 };
             _uiContainer.Add(playButton);
 
@@ -63,12 +70,26 @@ namespace LineRunner.Screens
             };
             _uiContainer.Add(leaderboardButton);
 
-            TextButton optionsButton = new TextButton(new Vector2(400f, 400), "Options") { Font = "Crayon64", Color = new Color(105, 131, 226) };
-            optionsButton.Tap += (o, e) =>
+            TextButton changeUsernameButton = new TextButton(new Vector2(400f, 400), "Change Username") { Font = "Crayon64", Color = Color.SteelBlue }; // Color.RoyalBlue };
+            changeUsernameButton.Tap += (o, e) =>
                 {
-                    LoadingScreen.Load(base.ScreenManager, false, new OptionsScreen());
+                    this.ShowChangeUsernameDialog();
                 };
-            _uiContainer.Add(optionsButton);
+            _uiContainer.Add(changeUsernameButton);
+
+            TextButton helpButton = new TextButton(new Vector2(50, 450), "Help") { Font = "Crayon32", Color = Color.Black };
+            helpButton.Tap += (o, e) =>
+                {
+                    base.ScreenManager.AddScreen(new HelpScreen());
+                };
+            _uiContainer.Add(helpButton);
+
+            TextButton rateButton = new TextButton(new Vector2(740, 455), "Rate") { Font = "Crayon32", Color = Color.Black };
+            rateButton.Tap += (o, e) =>
+            {
+                ApplicationInfo.OpenApplicationReviewPage();
+            };
+            _uiContainer.Add(rateButton);
 
             FlaiContentManager contentManager = base.ContentProvider.DefaultManager;
             _backgroundTexture = contentManager.LoadTexture("Gameplay/Background");
@@ -85,12 +106,17 @@ namespace LineRunner.Screens
             // Set ads hidden
             IAdManager adManager = base.Services.GetService<IAdManager>();
             adManager.Visible = false;
-            adManager.AdPosition = LineRunnerGlobals.BottomAdCenterPosition;
         }
 
         protected override void Update(UpdateContext updateContext, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
-            _uiContainer.Update(updateContext);
+            if (this.IsActive)
+            {
+                if (base.ScreenRunningTime.TotalSeconds > 0.4f)
+                {
+                    _uiContainer.Update(updateContext);
+                }
+            }
         }
 
         protected override void HandleInput(UpdateContext updateContext)
@@ -101,14 +127,15 @@ namespace LineRunner.Screens
                 return;
             }
 
-            if (updateContext.InputState.IsNewTouchAt(_rateInputArea))
+          /*  if (updateContext.InputState.IsNewTouchAt(_rateInputArea))
             {
                 ApplicationInfo.OpenApplicationReviewPage();
             }
             else if (updateContext.InputState.IsNewTouchAt(_helpInputArea))
             {
-                LoadingScreen.Load(base.ScreenManager, false, new HelpScreen());
-            }
+                base.ScreenManager.AddScreen(new HelpScreen());
+               // LoadingScreen.Load(base.ScreenManager, false, new HelpScreen());
+            } */
         }
 
         protected override void Draw(GraphicsContext graphicsContext)
@@ -118,9 +145,9 @@ namespace LineRunner.Screens
             graphicsContext.SpriteBatch.Draw(_backgroundTexture, Vector2.Zero);
             _uiContainer.Draw(graphicsContext, true);
 
-            graphicsContext.SpriteBatch.DrawStringCentered(base.FontProvider["Crayon24"], ApplicationInfo.Version, new Vector2(770, 20), Color.Black);
-            graphicsContext.SpriteBatch.DrawStringCentered(base.FontProvider["Crayon24"], "Rate", _rateInputArea.Center.ToVector(), Color.Black);
-            graphicsContext.SpriteBatch.DrawStringCentered(base.FontProvider["Crayon24"], "Help", _helpInputArea.Center.ToVector(), Color.Black);
+            graphicsContext.SpriteBatch.DrawStringCentered(base.FontProvider["Crayon32"], ApplicationInfo.Version, new Vector2(770, 25), Color.Black);
+       /*    graphicsContext.SpriteBatch.DrawString(base.FontProvider["Crayon32"], "Rate", new Vector2(720, 435), Color.Black);
+            graphicsContext.SpriteBatch.DrawString(base.FontProvider["Crayon32"], "Help", new Vector2(10, 435), Color.Black); */
 
             graphicsContext.SpriteBatch.End();
         }
@@ -130,7 +157,7 @@ namespace LineRunner.Screens
             LineRunnerSettings settings = base.GetSettings<LineRunnerSettings>();
             if (settings.FirstLaunch && string.IsNullOrEmpty(settings.UserName))
             {
-                settings.FirstLaunch = true;
+                settings.FirstLaunch = false;
                 if (!Guide.IsVisible)
                 {
                     Guide.BeginShowKeyboardInput(
@@ -138,7 +165,7 @@ namespace LineRunner.Screens
                         "Please enter your username",
                         "Please enter the username you want to use for global leaderboards. The username can be changed at anytime",
                         "",
-                        this.GetUserName,
+                        this.GetFirstLaunchUserName,
                         null);
                 }
 
@@ -148,7 +175,32 @@ namespace LineRunner.Screens
             return false;
         }
 
-        private void GetUserName(IAsyncResult result)
+        private void ShowChangeUsernameDialog()
+        {
+            if (!Guide.IsVisible)
+            {
+                LineRunnerSettings settings = base.GetSettings<LineRunnerSettings>();
+                Guide.BeginShowKeyboardInput(PlayerIndex.One, "Change username", "Change the username that will be used on the global leaderboards. The username must be at least 4 characters long ", settings.UserName, (result) =>
+                {
+                    string input = (Guide.EndShowKeyboardInput(result) ?? "").Trim();
+                    if (!string.IsNullOrEmpty(input) && input.Length >= 4 && settings.UserName != input)
+                    {
+                        settings.UserName = input;
+                        if (settings.MogadeUserName == "")
+                        {
+                            settings.MogadeUserName = settings.UserName;
+                            this.UpdateHighscore();
+                        }
+                        else
+                        {
+                            this.UpdateUsername();
+                        }
+                    }
+                }, null);
+            }
+        }
+
+        private void GetFirstLaunchUserName(IAsyncResult result)
         {
             LineRunnerSettings settings = base.GetSettings<LineRunnerSettings>();
 
@@ -157,6 +209,8 @@ namespace LineRunner.Screens
             {
                 settings.UserName = input;
                 settings.MogadeUserName = input;
+
+                base.Services.GetService<ISettingsManager>().Save();
             }
         }
 
@@ -173,6 +227,8 @@ namespace LineRunner.Screens
                     {
                         settings.MogadeUserName = settings.UserName;
                         this.UpdateHighscore();
+
+                        base.Services.GetService<ISettingsManager>().Save();
                     }
                 });
             }

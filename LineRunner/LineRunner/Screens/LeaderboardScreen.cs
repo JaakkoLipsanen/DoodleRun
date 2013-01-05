@@ -21,7 +21,7 @@ namespace LineRunner.Screens
         #region Logic
 
         const int ScoresVerticalLevel = 240;
-        const int ScoreSpacing = 33;
+        const int ScoreSpacing = 36;
 
         private readonly Camera2D _camera = new Camera2D(new Vector2(400, 240));
         private readonly Button[] _scopeButtons = new Button[3];
@@ -56,7 +56,7 @@ namespace LineRunner.Screens
         {
             get
             {
-                return _cameraRange.Min != _cameraRange.Max && _camera.Position.Y > _cameraRange.Min;
+                return _cameraRange.Min != _cameraRange.Max && _camera.Position.Y > ScoresVerticalLevel + FlaiGame.Current.ScreenSize.Y / 2f;
             }
         }
 
@@ -273,7 +273,7 @@ namespace LineRunner.Screens
             else
             {
                 SpriteFont rankFont = base.FontProvider["Crayon32"];
-                Vector2 position = new Vector2(400, ScoresVerticalLevel - 40);
+                Vector2 rankPosition = new Vector2(400, ScoresVerticalLevel - 40);
 
                 // Rank
                 if (_ranks.ContainsKey(_leaderboard.Scope))
@@ -283,17 +283,22 @@ namespace LineRunner.Screens
                     // User doesn't have rank on the leaderboard
                     if (rank == 0)
                     {
-                        graphicsContext.SpriteBatch.DrawStringCentered(rankFont, "You do not have a rank on this leaderboard", position, textColor);
+                        graphicsContext.SpriteBatch.DrawStringCentered(rankFont, "You do not have a rank on this leaderboard", rankPosition, textColor);
                     }
                     // User has a rank on the leaderboard
                     else
                     {
-                        graphicsContext.SpriteBatch.DrawStringCentered(rankFont, "Your rank is #", position, textColor); // '#' doesnt work on the "DK Crayon Crumble" font!
+                        graphicsContext.SpriteBatch.DrawStringCentered(rankFont, "You are ", rankPosition, textColor);
+                        Vector2 stringSize = rankFont.MeasureString("You are ");
+                        rankPosition += new Vector2(stringSize.X, -stringSize.Y) / 2;
+                        graphicsContext.SpriteBatch.DrawString(rankFont, Common.IntegerToOrdinalNumber(rank), rankPosition, textColor);
 
-                        Vector2 stringSize = rankFont.MeasureString("Your rank is #");
+                       /* graphicsContext.SpriteBatch.DrawStringCentered(rankFont, "Your rank is #", position, textColor); // '#' doesnt work on the "DK Crayon Crumble" font!
+
+                       // Vector2 stringSize = rankFont.MeasureString("Your rank is #");
                         position += new Vector2(stringSize.X, -stringSize.Y) / 2;
 
-                        graphicsContext.SpriteBatch.DrawString<int>(rankFont, rank, position, textColor);
+                        graphicsContext.SpriteBatch.DrawString<int>(rankFont, rank, position, textColor);*/
                     }
                 }
                 else
@@ -301,7 +306,7 @@ namespace LineRunner.Screens
                     // Username is invalid
                     if (!this.IsUsernameValid())
                     {
-                        graphicsContext.SpriteBatch.DrawStringCentered(rankFont, "Please choose a username to submit scores to leaderboards", position, textColor);
+                        graphicsContext.SpriteBatch.DrawStringCentered(rankFont, "Username is required for leaderboards", rankPosition, textColor);
                     }
                     // If user name is fine, try to load rank again
                     else if (!_hasLoadingFailed && !_isLoadingRanks)
@@ -407,7 +412,7 @@ namespace LineRunner.Screens
                 });
             }
             _scopeButtons[0].Activate();
-            _loadScoresButton = new Button(Vector2i.Zero, new Vector2i(400, 100), "Load More Scores", () => _leaderboard.LoadNextPage(this.LoadPageResponse));
+            _loadScoresButton = new Button(Vector2i.Zero, new Vector2i(400, 100), "Load More Scores", () => _leaderboard.LoadNextPage(this.LoadPageResponse)) { IsActive = true };
         }
 
         #region "Button" -class
@@ -429,6 +434,7 @@ namespace LineRunner.Screens
             public bool IsActive
             {
                 get { return _isActive; }
+                set { _isActive = value; }
             }
 
             public Vector2i Position

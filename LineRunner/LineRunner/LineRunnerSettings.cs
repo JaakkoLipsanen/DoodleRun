@@ -9,7 +9,6 @@ namespace LineRunner
         private bool _highScorePostedToLeaderboards = true;
         private string _userName = "";
         private string _mogadeUserName = "";
-        private bool _audioOn = false;
         private int _highScore = 0;
 
         public string UserName
@@ -73,19 +72,6 @@ namespace LineRunner
             }
         }
 
-        public bool IsAudioOn
-        {
-            get { return _audioOn; }
-            set
-            {
-                if (_audioOn != value)
-                {
-                    _audioOn = value;
-                    _needsUpdate = true;
-                }
-            }
-        }
-
         public bool CanPostScoresToLeaderboard
         {
             get { return !string.IsNullOrEmpty(this.UserName); }
@@ -99,7 +85,6 @@ namespace LineRunner
             _mogadeUserName = "";
             _highScorePostedToLeaderboards = true;
             _highScore = 0;
-            _audioOn = false;
         }
 
         #endregion
@@ -112,7 +97,6 @@ namespace LineRunner
             writer.Write(_mogadeUserName);
             writer.Write(_highScore);
             writer.Write(_highScorePostedToLeaderboards);
-            writer.Write(_audioOn);
         }
 
         protected override void ReadInner(BinaryReader reader)
@@ -121,7 +105,6 @@ namespace LineRunner
             this.MogadeUserName = reader.ReadString();
             this.HighScore = reader.ReadInt32();
             this.HighScorePostedToLeaderboards = reader.ReadBoolean();
-            this.IsAudioOn = reader.ReadBoolean();
         }
 
         #endregion
