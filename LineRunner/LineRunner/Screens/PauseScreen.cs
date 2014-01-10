@@ -31,7 +31,7 @@ namespace LineRunner.Screens
             base.TransitionOnTime = LineRunnerGlobals.ScreenFadeTime;
         }
 
-        protected override void Activate(bool instancePreserved)
+        protected override void LoadContent(bool instancePreserved)
         {
             if (instancePreserved)
             {
@@ -39,20 +39,17 @@ namespace LineRunner.Screens
             }
 
             FlaiContentManager contentManager = base.ContentProvider.DefaultManager;
-            Rectangle leftButtonRect = new Rectangle(400 + (400 - (200 + 128)), 190, 128, 128);
-            Rectangle rightButtonRect = new Rectangle(200, 190, 128, 128);
+            RectangleF leftButtonRect = new RectangleF(400 + (400 - (200 + 128)), 190, 128, 128);
+            RectangleF rightButtonRect = new RectangleF(200, 190, 128, 128);
 
             _continueButton = new TexturedButton(leftButtonRect, new Sprite(contentManager.LoadTexture("PauseScreen/Play")));
-            _continueButton.Tap += (o, e) =>
-            {
-                base.ExitScreen();
-            };
+            _continueButton.Click += this.ExitScreen;
             _uiContainer.Add(_continueButton);
 
             _mainMenuButton = new TexturedButton(rightButtonRect, new Sprite(contentManager.LoadTexture("PauseScreen/MainMenu")));
-            _mainMenuButton.Tap += (o, e) =>
+            _mainMenuButton.Click += () =>
             {
-                LoadingScreen.Load(base.ScreenManager, false, new MainMenuScreen());
+                LoadingScreen.Load(this.ScreenManager, false, new MainMenuScreen());
             };
             _uiContainer.Add(_mainMenuButton);
 

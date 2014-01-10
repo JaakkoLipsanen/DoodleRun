@@ -43,7 +43,7 @@ namespace LineRunner.Screens
         private Dictionary<TileType, Texture2D> _tileTextures = new Dictionary<TileType, Texture2D>();
         private Texture2D _groundTexture;
 
-        private SpriteSheet _playerSpriteSheet;
+        private TileSpriteSheet _playerSpriteSheet;
 
         private readonly Texture2D[] _cloudTextures = new Texture2D[Cloud.TextureCount];
 
@@ -58,7 +58,7 @@ namespace LineRunner.Screens
             base.EnabledGestures = GestureType.Tap;
         }
 
-        protected override void Activate(bool instancePreserved)
+        protected override void LoadContent(bool instancePreserved)
         {
             if (instancePreserved)
             {
@@ -76,7 +76,7 @@ namespace LineRunner.Screens
             _tileTextures.Add(TileType.Spike, contentManager.LoadTexture("Gameplay/Spike"));
             _groundTexture = contentManager.LoadTexture("Gameplay/Ground");
 
-            _playerSpriteSheet = new SpriteSheet(contentManager.LoadTexture("Gameplay/PlayerSprite"), 6, 3);
+            _playerSpriteSheet = new TileSpriteSheet(contentManager.LoadTexture("Gameplay/PlayerSprite"), 6, 3);
 
             for (int i = 0; i < _cloudTextures.Length; i++)
             {
@@ -84,7 +84,15 @@ namespace LineRunner.Screens
             }
         }
 
-        protected override void HandleInput(UpdateContext updateContext)
+        protected override void Update(UpdateContext updateContext, bool otherScreenHasFocus, bool coveredByOtherScreen)
+        {
+            if (this.IsActive)
+            {
+                this.HandleInput(updateContext);
+            }
+        }
+
+        private void HandleInput(UpdateContext updateContext)
         {
             if (_exit || updateContext.InputState.IsBackButtonPressed)
             {
@@ -137,7 +145,7 @@ namespace LineRunner.Screens
                 graphicsContext.SpriteBatch.DrawStringCentered(_font, "Tap on the left side to roll", new Vector2(180, 400), Color.Black);
                 graphicsContext.SpriteBatch.DrawStringCentered(_font, "Tap on the right side to jump", new Vector2(619.5f, 400), Color.Black);
 
-                graphicsContext.SpriteBatch.DrawStringCentered(_font, "Hold to jump higher", new Vector2(620f, 440), Color.Black);
+                graphicsContext.SpriteBatch.DrawStringCentered(_font, "Hold to jump longer", new Vector2(620f, 440), Color.Black);
             }
 
             graphicsContext.SpriteBatch.End();

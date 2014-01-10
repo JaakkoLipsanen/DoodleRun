@@ -1,3 +1,4 @@
+using System;
 using Flai;
 using Flai.Advertisiments;
 using Flai.Graphics;
@@ -6,8 +7,6 @@ using Flai.Mogade;
 using LineRunner.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Net;
 
 namespace LineRunner
 {
@@ -55,6 +54,7 @@ namespace LineRunner
         protected override void InitializeInner()
         {
             _adManager.InitializeMicrosoftAds(LineRunnerGame.PubCenterAppId, LineRunnerGame.PubCenterAdUnitId);
+         // _adManager.InitializeAdDuplexAds(LineRunnerGame.AdDuplexAppId);
 
             _soundEffectManager.Enabled = false;
         }

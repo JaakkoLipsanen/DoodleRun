@@ -1,15 +1,15 @@
 
 using Flai;
-using Flai.Architecture;
 using Flai.Content;
 using Flai.Graphics;
 using Microsoft.Devices;
 using Microsoft.Xna.Framework;
 using System;
+using Flai.Misc;
 
 namespace LineRunner.Model
 {
-    public class Player : DrawableGameObject
+    public class Player
     {
         private static readonly TimeSpan JumpRollVibrationTime = TimeSpan.FromSeconds(0.0005f);
 
@@ -86,7 +86,7 @@ namespace LineRunner.Model
 
         #region Update and HandleInput
 
-        public override void Update(UpdateContext updateContext)
+        public void Update(UpdateContext updateContext)
         {
             if (this.IsAlive)
             {
@@ -95,8 +95,6 @@ namespace LineRunner.Model
                 // If player is not in ground, handle vertical movement
                 if (!_isOnGround)
                 {
-                    
-
                     float mult = 1;
                     if (Math.Abs(_yVelocity) < 100)
                     {
@@ -179,11 +177,9 @@ namespace LineRunner.Model
             }
         }
 
-        
-
         #endregion
 
-        public override void Draw(GraphicsContext graphicsContext)
+        public void Draw(GraphicsContext graphicsContext)
         {
             graphicsContext.SpriteBatch.Draw(_playerSprite, _position - _playerSprite.FrameSize);
         }
@@ -209,7 +205,11 @@ namespace LineRunner.Model
             _isRolling = false;
             _playerSprite.SetAnimation("Float", true);
 
-            VibrateController.Default.Start(Player.JumpRollVibrationTime);
+            LineRunnerSettings settings = FlaiGame.ServiceContainer.GetService<ISettingsManager<LineRunnerSettings>>().Settings;
+            if (settings.VibrationEnabled)
+            {
+                VibrateController.Default.Start(Player.JumpRollVibrationTime);
+            }
         }
 
         private void Roll()
@@ -224,7 +224,11 @@ namespace LineRunner.Model
                 _playerSprite.SetAnimation("Roll", false);
             }
 
-            VibrateController.Default.Start(Player.JumpRollVibrationTime);
+            LineRunnerSettings settings = FlaiGame.ServiceContainer.GetService<ISettingsManager<LineRunnerSettings>>().Settings;
+            if (settings.VibrationEnabled)
+            {
+                VibrateController.Default.Start(Player.JumpRollVibrationTime);
+            }
         }
 
         public void Fall(UpdateContext updateContext)

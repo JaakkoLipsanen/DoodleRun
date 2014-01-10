@@ -41,7 +41,7 @@ namespace LineRunner.Screens
             base.TransitionOnTime = LineRunnerGlobals.ScreenFadeTime;
         }
 
-        protected override void Activate(bool instancePreserved)
+        protected override void LoadContent(bool instancePreserved)
         {
             if (instancePreserved)
             {
@@ -50,27 +50,24 @@ namespace LineRunner.Screens
 
             FlaiContentManager contentManager = base.ContentProvider.DefaultManager;
             
-            Rectangle leftButtonRect = new Rectangle(400 + (400 - (200 + 128)), 190, 128, 128);
-            Rectangle rightButtonRect = new Rectangle(200, 190, 128, 128);
+            RectangleF leftButtonRect = new RectangleF(400 + (400 - (200 + 128)), 190, 128, 128);
+            RectangleF rightButtonRect = new RectangleF(200, 190, 128, 128);
 
             _restartButton = new TexturedButton(leftButtonRect, new Sprite(contentManager.LoadTexture("PauseScreen/Play")));
-            _restartButton.Tap += (o, e) =>
+            _restartButton.Click += () =>
             {
                 _gamePlayScreen.RestartGame();
-                base.ExitScreen();
+                this.ExitScreen();
             };
             _uiContainer.Add(_restartButton);
 
             _mainMenuButton = new TexturedButton(rightButtonRect, new Sprite(contentManager.LoadTexture("PauseScreen/MainMenu")));
-            _mainMenuButton.Tap += (o, e) =>
-            {
-                LoadingScreen.Load(base.ScreenManager, false, new MainMenuScreen());
-            };
+            _mainMenuButton.Click += () => LoadingScreen.Load(this.ScreenManager, false, new MainMenuScreen());
             _uiContainer.Add(_mainMenuButton);
 
             _background = contentManager.LoadTexture("PauseScreen/Background");
 
-            IFontProvider fontProvider = base.Services.GetService<IFontProvider>();
+            IFontContainer fontProvider = base.Services.GetService<IFontContainer>();
             _font = fontProvider["Crayon32"];
 
             this.SaveScore();
@@ -103,7 +100,7 @@ namespace LineRunner.Screens
 
         private void SaveScore()
         {
-            LineRunnerSettings settings = base.Services.GetService<ISettingsManager<LineRunnerSettings>>().Settings;
+            LineRunnerSettings settings = base.Services.GetService<SettingsManager<LineRunnerSettings>>().Settings;
 
             bool isHighScore = false;
             // If the score is new high score, post it to mogade

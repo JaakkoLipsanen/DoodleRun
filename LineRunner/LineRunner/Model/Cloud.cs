@@ -1,6 +1,5 @@
 using Flai;
 using Flai.Content;
-using Flai.Extensions;
 using Flai.Graphics;
 using Flai.Misc;
 using Microsoft.Xna.Framework;

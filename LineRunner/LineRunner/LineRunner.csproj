@@ -70,9 +70,6 @@
     <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json.WindowsPhone, Version=4.0.2.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
     <Reference Include="System" />
-    <Reference Include="System.Runtime.Serialization, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e, processorArchitecture=MSIL" />
-    <Reference Include="System.Servicemodel, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="System.Servicemodel.Web, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -96,6 +93,7 @@
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Screens\OptionsScreen.cs" />
     <Compile Include="Screens\PauseScreen.cs" />
+    <Compile Include="Settings\Settings.cs" />
     <None Include="Properties\AppManifest.xml">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>
     </None>
@@ -106,17 +104,17 @@
     <Compile Include="LineRunnerGame.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\FlaiWP7\Flai.Advertisement\Flai.Advertisement.csproj">
-      <Project>{525988CB-A95A-4E00-84E7-B73D7AF999F0}</Project>
-      <Name>Flai.Advertisement</Name>
+    <ProjectReference Include="..\..\..\Flai\Flai.WP7.Advertisement\Flai.WP7.Advertisements.csproj">
+      <Project>{B26501C0-60F8-40E6-9311-0AEFD8CA18A5}</Project>
+      <Name>Flai.WP7.Advertisements</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\FlaiWP7\Flai.Mogade\Flai.Mogade.csproj">
-      <Project>{D232A561-05CB-4C48-92B7-D0F2033E6A8A}</Project>
-      <Name>Flai.Mogade</Name>
+    <ProjectReference Include="..\..\..\Flai\Flai.WP7.Mogade\Flai.WP7.Mogade.csproj">
+      <Project>{DDC32E5F-D651-4221-B53E-CCBC4227E7E2}</Project>
+      <Name>Flai.WP7.Mogade</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\FlaiWP7\FlaiWP7\Flai.csproj">
-      <Project>{32F259CB-9965-41FD-BCE0-2CB50A5DF680}</Project>
-      <Name>Flai</Name>
+    <ProjectReference Include="..\..\..\Flai\Flai\Flai.WP7.csproj">
+      <Project>{0D5202D6-AA21-4682-83A6-5052136DE1F4}</Project>
+      <Name>Flai.WP7</Name>
     </ProjectReference>
     <ProjectReference Include="..\LineRunnerContent\LineRunnerContent.contentproj">
       <Name>LineRunnerContent</Name>

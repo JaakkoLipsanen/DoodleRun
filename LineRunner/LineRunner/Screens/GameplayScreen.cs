@@ -2,7 +2,6 @@
 using Flai;
 using Flai.Advertisiments;
 using Flai.Content;
-using Flai.Extensions;
 using Flai.Graphics;
 using Flai.Misc;
 using Flai.ScreenManagement;
@@ -48,7 +47,7 @@ namespace LineRunner.Screens
             base.TransitionOnTime = LineRunnerGlobals.ScreenFadeTime;
         }
 
-        protected override void Activate(bool instancePreserved)
+        protected override void LoadContent(bool instancePreserved)
         {
             if (instancePreserved)
             {
@@ -64,7 +63,7 @@ namespace LineRunner.Screens
             _player.LoadContent(gameContentManager);
             this.CreateBackgroundTexture(gameContentManager);
 
-            IFontProvider fontProvider = base.Services.GetService<IFontProvider>();
+            IFontContainer fontProvider = base.Services.GetService<IFontContainer>();
             _scoreFont = fontProvider["Crayon32"];
 
             // Load clouds
@@ -82,7 +81,7 @@ namespace LineRunner.Screens
             {
                 if (_player.IsAlive)
                 {
-                    _score += updateContext.GameTime.ElapsedGameTime.TotalMilliseconds / 20;
+                    _score += updateContext.GameTime.XnaGameTime.ElapsedGameTime.TotalMilliseconds / 20;
                 }
 
                 _player.Update(updateContext);
@@ -102,17 +101,17 @@ namespace LineRunner.Screens
                     cloud.Update(updateContext);
                 }
             }
-        }
 
-        protected override void HandleInput(UpdateContext updateContext)
-        {
-            if (updateContext.InputState.IsBackButtonPressed)
+            if (this.IsActive)
             {
-                this.Pause();
-                return;
-            }
+                if (updateContext.InputState.IsBackButtonPressed)
+                {
+                    this.Pause();
+                    return;
+                }
 
-            _player.HandleInput(updateContext);
+                _player.HandleInput(updateContext);
+            }
         }
 
         protected override void Draw(GraphicsContext graphicsContext)
@@ -139,9 +138,26 @@ namespace LineRunner.Screens
             graphicsContext.SpriteBatch.End();
 
             // Draw score
+            LineRunnerSettings settings = base.Services.GetService<ISettingsManager<LineRunnerSettings>>().Settings;
+            int highScore = Math.Max(this.Score, settings.HighScore);
+
             graphicsContext.SpriteBatch.Begin();
-            graphicsContext.SpriteBatch.DrawString<int>(_scoreFont, this.Score, new Vector2(10, 5), Color.Black, 1f);
-            graphicsContext.SpriteBatch.End();      
+            if (settings.ScoreLocation == ScoreLocation.Left)
+            {
+                graphicsContext.SpriteBatch.DrawString<int>(_scoreFont, this.Score, new Vector2(10, 5), Color.Black, 1f);
+            }
+            else if (settings.ScoreLocation == ScoreLocation.Right)
+            {
+                graphicsContext.SpriteBatch.DrawString<int>(_scoreFont, this.Score, new Vector2(graphicsContext.ScreenSize.Width - 10 - FlaiMath.DigitCount(this.Score) * _scoreFont.GetCharacterWidth(), 5), Color.Black, 1f);
+            }
+            else if (settings.ScoreLocation == ScoreLocation.Down)
+            {
+                graphicsContext.SpriteBatch.DrawString<int>(_scoreFont, this.Score, new Vector2(graphicsContext.ScreenSize.Width / 2f - FlaiMath.DigitCount(this.Score) * _scoreFont.GetCharacterWidth() / 2f, graphicsContext.ScreenSize.Height - _scoreFont.GetCharacterHeight() * 2), Color.Black, 1f);
+
+                float horizontalPosition = graphicsContext.ScreenArea.Width / 2f - (_scoreFont.MeasureString("Best: ").X + _scoreFont.GetCharacterWidth('8') * FlaiMath.DigitCount(highScore)) / 2f;
+                graphicsContext.SpriteBatch.DrawString<string, int>(_scoreFont, "Best: ", highScore, new Vector2(horizontalPosition, graphicsContext.ScreenSize.Height - _scoreFont.GetCharacterHeight()), Color.Black, 1f);
+            }
+            graphicsContext.SpriteBatch.End();
         }
 
         private void InitializeClouds()
@@ -174,13 +190,13 @@ namespace LineRunner.Screens
 
             bool intersectsWithUpperLevel = LineRunnerGlobals.UpperTileVerticalRange.Intersects(playerVerticalPositionRange);
             bool intersectsWithGroundLevel = LineRunnerGlobals.GroundTileVerticalRange.Intersects(playerVerticalPositionRange);
-            if (intersectsWithGroundLevel || intersectsWithUpperLevel )
+            if (intersectsWithGroundLevel || intersectsWithUpperLevel)
             {
                 for (float x = playerRectangle.Left - (playerRectangle.Left % LineRunnerGlobals.TileSize); x <= playerRectangle.Right - (playerRectangle.Right % LineRunnerGlobals.TileSize); x += LineRunnerGlobals.TileSize)
                 {
                     if (intersectsWithUpperLevel)
                     {
-                        
+
                         TileType upperTile = _level.GetTile(new Vector2(x, LineRunnerGlobals.UpperTileLevel - LineRunnerGlobals.TileSize / 2f));
                         if (upperTile != TileType.Air)
                         {
@@ -220,27 +236,31 @@ namespace LineRunner.Screens
 
         private void OnPlayerDie()
         {
-            VibrateController.Default.Start(TimeSpan.FromSeconds(0.1f));
+            LineRunnerSettings settings = base.Services.GetService<ISettingsManager<LineRunnerSettings>>().Settings;
+            if (settings.VibrationEnabled)
+            {
+                VibrateController.Default.Start(TimeSpan.FromSeconds(0.075f));
+            }
             _player.IsAlive = false;
             base.ScreenManager.AddScreen(new DeathScreen(this, this.Score));
         }
 
         private void CreateBackgroundTexture(FlaiContentManager gameContentManager)
         {
-            IGraphicsContext graphicsContext = base.Services.GetService<IGraphicsContext>();
-            RenderTarget2D backgroundRenderTarget = new RenderTarget2D(graphicsContext.GraphicsDevice, graphicsContext.ScreenSize.X, graphicsContext.ScreenSize.Y);
+            FlaiSpriteBatch spriteBatch = new FlaiSpriteBatch(FlaiGame.Current.GraphicsDevice);
+            RenderTarget2D backgroundRenderTarget = new RenderTarget2D(FlaiGame.Current.GraphicsDevice, FlaiGame.Current.ScreenSize.Width, FlaiGame.Current.ScreenSize.Height);
             Texture2D emptyBackgroundTexture = gameContentManager.LoadTexture("Gameplay/Background");
             Texture2D sunTexture = gameContentManager.LoadTexture("Gameplay/Sun");
 
             // Draw
-            graphicsContext.GraphicsDevice.SetRenderTarget(backgroundRenderTarget);
-            graphicsContext.SpriteBatch.Begin();
+            FlaiGame.Current.GraphicsDevice.SetRenderTarget(backgroundRenderTarget);
+            spriteBatch.Begin();
 
-            graphicsContext.SpriteBatch.DrawFullscreen(emptyBackgroundTexture, Color.White);
-            graphicsContext.SpriteBatch.DrawCentered(sunTexture, new Vector2(800, 0));
+            spriteBatch.DrawFullscreen(emptyBackgroundTexture, Color.White);
+            spriteBatch.DrawCentered(sunTexture, new Vector2(800, 0));
 
-            graphicsContext.SpriteBatch.End();
-            graphicsContext.GraphicsDevice.SetRenderTarget(null);
+            spriteBatch.End();
+            FlaiGame.Current.GraphicsDevice.SetRenderTarget(null);
 
             // Set render target to backgGroundTexture
             _backgroundTexture = backgroundRenderTarget;

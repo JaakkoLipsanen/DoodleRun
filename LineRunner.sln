@@ -5,11 +5,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineRunner", "LineRunner\Li
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineRunnerContent", "LineRunner\LineRunnerContent\LineRunnerContent.contentproj", "{FEA0C131-80C7-4D96-B3F7-0A8CE0575C36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flai", "..\FlaiWP7\FlaiWP7\Flai.csproj", "{32F259CB-9965-41FD-BCE0-2CB50A5DF680}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flai.WP7.Advertisements", "..\Flai\Flai.WP7.Advertisement\Flai.WP7.Advertisements.csproj", "{B26501C0-60F8-40E6-9311-0AEFD8CA18A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flai.Mogade", "..\FlaiWP7\Flai.Mogade\Flai.Mogade.csproj", "{D232A561-05CB-4C48-92B7-D0F2033E6A8A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flai.WP7.Mogade", "..\Flai\Flai.WP7.Mogade\Flai.WP7.Mogade.csproj", "{DDC32E5F-D651-4221-B53E-CCBC4227E7E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flai.Advertisement", "..\FlaiWP7\Flai.Advertisement\Flai.Advertisement.csproj", "{525988CB-A95A-4E00-84E7-B73D7AF999F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flai.WP7", "..\Flai\Flai\Flai.WP7.csproj", "{0D5202D6-AA21-4682-83A6-5052136DE1F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,18 +25,18 @@ Global
 		{F9C07104-2CAE-43E6-9B03-E59BE43BE37A}.Release|Windows Phone.Deploy.0 = Release|Windows Phone
 		{FEA0C131-80C7-4D96-B3F7-0A8CE0575C36}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
 		{FEA0C131-80C7-4D96-B3F7-0A8CE0575C36}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
-		{32F259CB-9965-41FD-BCE0-2CB50A5DF680}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
-		{32F259CB-9965-41FD-BCE0-2CB50A5DF680}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
-		{32F259CB-9965-41FD-BCE0-2CB50A5DF680}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
-		{32F259CB-9965-41FD-BCE0-2CB50A5DF680}.Release|Windows Phone.Build.0 = Release|Windows Phone
-		{D232A561-05CB-4C48-92B7-D0F2033E6A8A}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
-		{D232A561-05CB-4C48-92B7-D0F2033E6A8A}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
-		{D232A561-05CB-4C48-92B7-D0F2033E6A8A}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
-		{D232A561-05CB-4C48-92B7-D0F2033E6A8A}.Release|Windows Phone.Build.0 = Release|Windows Phone
-		{525988CB-A95A-4E00-84E7-B73D7AF999F0}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
-		{525988CB-A95A-4E00-84E7-B73D7AF999F0}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
-		{525988CB-A95A-4E00-84E7-B73D7AF999F0}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
-		{525988CB-A95A-4E00-84E7-B73D7AF999F0}.Release|Windows Phone.Build.0 = Release|Windows Phone
+		{B26501C0-60F8-40E6-9311-0AEFD8CA18A5}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
+		{B26501C0-60F8-40E6-9311-0AEFD8CA18A5}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
+		{B26501C0-60F8-40E6-9311-0AEFD8CA18A5}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
+		{B26501C0-60F8-40E6-9311-0AEFD8CA18A5}.Release|Windows Phone.Build.0 = Release|Windows Phone
+		{DDC32E5F-D651-4221-B53E-CCBC4227E7E2}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
+		{DDC32E5F-D651-4221-B53E-CCBC4227E7E2}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
+		{DDC32E5F-D651-4221-B53E-CCBC4227E7E2}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
+		{DDC32E5F-D651-4221-B53E-CCBC4227E7E2}.Release|Windows Phone.Build.0 = Release|Windows Phone
+		{0D5202D6-AA21-4682-83A6-5052136DE1F4}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
+		{0D5202D6-AA21-4682-83A6-5052136DE1F4}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
+		{0D5202D6-AA21-4682-83A6-5052136DE1F4}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
+		{0D5202D6-AA21-4682-83A6-5052136DE1F4}.Release|Windows Phone.Build.0 = Release|Windows Phone
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,8 +1,8 @@
 using Flai;
 using Flai.Advertisiments;
 using Flai.Content;
-using Flai.Extensions;
 using Flai.Graphics;
+using Flai.Misc;
 using Flai.Mogade;
 using Flai.ScreenManagement;
 using Flai.ScreenManagement.Screens;
@@ -56,7 +56,7 @@ namespace LineRunner.Screens
         {
             get
             {
-                return _cameraRange.Min != _cameraRange.Max && _camera.Position.Y > ScoresVerticalLevel + FlaiGame.Current.ScreenSize.Y / 2f;
+                return _cameraRange.Min != _cameraRange.Max && _camera.Position.Y > ScoresVerticalLevel + FlaiGame.Current.ScreenSize.Height / 2f;
             }
         }
 
@@ -68,7 +68,7 @@ namespace LineRunner.Screens
             this.TransitionOffTime = LineRunnerGlobals.ScreenFadeTime;
         }
 
-        protected override void Activate(bool instancePreserved)
+        protected override void LoadContent(bool instancePreserved)
         {
             if (instancePreserved)
             {
@@ -87,7 +87,7 @@ namespace LineRunner.Screens
             // Load assets
             FlaiContentManager contentManager = base.ContentProvider.DefaultManager;
 
-            _titleFont = base.FontProvider.GetFont("Crayon96");
+            _titleFont = this.FontContainer.GetFont("Crayon96");
             _scoreFont = contentManager.LoadFont("Crayon32");
 
             _backgroundTexture = contentManager.LoadTexture("Leaderboard/Background");
@@ -104,9 +104,19 @@ namespace LineRunner.Screens
             adManager.Visible = false;
         }
 
+        protected override void Update(UpdateContext updateContext, bool otherScreenHasFocus, bool coveredByOtherScreen)
+        {
+            if (!this.IsActive)
+            {
+                return;
+            }
+
+            this.HandleInput(updateContext);
+        }
+
         #region Update and Handle Input
 
-        protected override void HandleInput(UpdateContext updateContext)
+        private void HandleInput(UpdateContext updateContext)
         {
             if (updateContext.InputState.IsBackButtonPressed)
             {
@@ -114,7 +124,7 @@ namespace LineRunner.Screens
             }
 
             bool isScreenTouched = false;
-            foreach (TouchLocation location in updateContext.InputState.TouchState)
+            foreach (TouchLocation location in updateContext.InputState.TouchLocations)
             {
                 // If the screen is being touched, reset vertical velocity to zero
                 if (location.State == TouchLocationState.Moved || location.State == TouchLocationState.Pressed)
@@ -185,8 +195,7 @@ namespace LineRunner.Screens
             }
 
             // Handle button input
-            IGraphicsContext graphicsContext = base.Services.GetService<IGraphicsContext>();
-            RectangleF cameraArea = _camera.GetArea(graphicsContext.GraphicsDevice);
+            RectangleF cameraArea = _camera.GetArea(FlaiGame.Current.GraphicsDevice);
             Vector2 cameraTopLeft = new Vector2(cameraArea.Left, cameraArea.Top);
 
             foreach (GestureSample gesture in updateContext.InputState.Gestures)
@@ -224,8 +233,6 @@ namespace LineRunner.Screens
                     }
                 }
             }
-
-            base.HandleInput(updateContext);
         }
 
         #endregion
@@ -257,12 +264,12 @@ namespace LineRunner.Screens
             }
 
             // Draw title
-            graphicsContext.SpriteBatch.DrawStringCentered(base.FontProvider["Crayon64"], "Leaderboards", new Vector2(400, 60), textColor);
+            graphicsContext.SpriteBatch.DrawStringCentered(base.FontContainer["Crayon64"], "Leaderboards", new Vector2(400, 60), textColor);
 
             // Loading
             if (_isLoadingFirstPage)
             {
-                graphicsContext.SpriteBatch.DrawStringCentered(base.FontProvider["Crayon32"], "Loading", new Vector2(400, 280), textColor);
+                graphicsContext.SpriteBatch.DrawStringCentered(base.FontContainer["Crayon32"], "Loading", new Vector2(400, 280), textColor);
             }
             // Loading failed
             else if (_hasLoadingFailed)
@@ -272,7 +279,7 @@ namespace LineRunner.Screens
             // Loading completed succesfully
             else
             {
-                SpriteFont rankFont = base.FontProvider["Crayon32"];
+                SpriteFont rankFont = base.FontContainer["Crayon32"];
                 Vector2 rankPosition = new Vector2(400, ScoresVerticalLevel - 40);
 
                 // Rank
@@ -349,7 +356,7 @@ namespace LineRunner.Screens
 
         private bool IsUsernameValid()
         {
-            LineRunnerSettings settings = base.GetSettings<LineRunnerSettings>();
+            LineRunnerSettings settings = base.Services.GetService<ISettingsManager<LineRunnerSettings>>().Settings;
 
             return settings.CanPostScoresToLeaderboard;
         }
@@ -372,7 +379,7 @@ namespace LineRunner.Screens
 
         private void LoadRanks()
         {
-            LineRunnerSettings settings = base.GetSettings<LineRunnerSettings>();
+            LineRunnerSettings settings = base.Services.GetService<ISettingsManager<LineRunnerSettings>>().Settings;
 
             _isLoadingRanks = true;
             _leaderboard.GetRanks(settings.MogadeUserName, new LeaderboardScope[] { LeaderboardScope.Daily, LeaderboardScope.Weekly, LeaderboardScope.Overall }, (response) =>

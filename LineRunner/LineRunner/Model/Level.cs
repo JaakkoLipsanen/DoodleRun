@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Flai;
 using Flai.Content;
-using Flai.Extensions;
 using Flai.Graphics;
 using Flai.Misc;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Diagnostics;
 
 namespace LineRunner.Model
 {
@@ -33,7 +32,7 @@ namespace LineRunner.Model
         private Color _phoneAccentColor;
         private Texture2D _groundTexture;
 
-        private readonly Dictionary<TileType, SpriteSheet> _tileSpriteSheets = new Dictionary<TileType, SpriteSheet>();
+        private readonly Dictionary<TileType, TileSpriteSheet> _tileSpriteSheets = new Dictionary<TileType, TileSpriteSheet>();
         private readonly Dictionary<TileType, Color[]> _tilePixelDatas = new Dictionary<TileType, Color[]>();
 
         #endregion
@@ -47,10 +46,10 @@ namespace LineRunner.Model
         {
             _groundTexture = contentManager.LoadTexture("Gameplay/Ground");
 
-            SpriteSheet spikeSpriteSheet = new SpriteSheet(contentManager.LoadTexture("Gameplay/Spike"), 1, 1);
+            TileSpriteSheet spikeSpriteSheet = new TileSpriteSheet(contentManager.LoadTexture("Gameplay/Spike"), 1, 1);
             _tileSpriteSheets.Add(TileType.Spike, spikeSpriteSheet);
 
-            SpriteSheet blockSpriteSheet = new SpriteSheet(contentManager.LoadTexture("Gameplay/Block"), 1, 1);
+            TileSpriteSheet blockSpriteSheet = new TileSpriteSheet(contentManager.LoadTexture("Gameplay/Block"), 1, 1);
             _tileSpriteSheets.Add(TileType.Block, blockSpriteSheet);
 
             _tilePixelDatas.Add(TileType.Spike, contentManager.LoadTexture("Gameplay/SpikeCollision").GetData<Color>());
@@ -132,10 +131,10 @@ namespace LineRunner.Model
             }
         }
 
-        private void DrawTile(GraphicsContext graphicsContext, Rectangle area, SpriteSheet spriteSheet, Color color)
+        private void DrawTile(GraphicsContext graphicsContext, Rectangle area, TileSpriteSheet spriteSheet, Color color)
         {
             // Draw random tile from the tile sprite sheet
-            int x = SimplexNoise.GetPseudoRandom(area.Left, -area.Right, new RangeInt(0, spriteSheet.SheetSize.X - 1));
+            int x = SimplexNoise.GetPseudoRandom2D(area.Left, -area.Right, new RangeInt(0, spriteSheet.SheetSize.Width - 1));
             graphicsContext.SpriteBatch.Draw(spriteSheet.Texture, area, spriteSheet.GetSourceRectangle(x, 0), color);
         }
 
