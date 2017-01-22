@@ -161,3 +161,13 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+
+.cachefile
+*.cachefile
+PerformanceLogs
+*/PerformanceLogs/*
+PerfLogs
+*/PerfLogs/*
+bin
+obj
+.user

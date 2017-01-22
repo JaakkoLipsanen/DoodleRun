@@ -108,7 +108,7 @@ namespace Flai.Misc
 
         public SettingsManager(FlaiServiceContainer services)
         {
-            _isolatedStorage = null; // IsolatedStorageFile.GetUserStoreForApplication();
+            _isolatedStorage = IsolatedStorageFile.GetUserStoreForApplication();
             _services = services;
 
             services.Add<ISettingsManager>(this);

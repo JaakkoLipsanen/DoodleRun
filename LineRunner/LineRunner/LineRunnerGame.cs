@@ -53,7 +53,7 @@ namespace LineRunner
 
         protected override void InitializeInner()
         {
-            _adManager.InitializeMicrosoftAds(LineRunnerGame.PubCenterAppId, LineRunnerGame.PubCenterAdUnitId);
+          //  _adManager.InitializeMicrosoftAds(LineRunnerGame.PubCenterAppId, LineRunnerGame.PubCenterAdUnitId);
          // _adManager.InitializeAdDuplexAds(LineRunnerGame.AdDuplexAppId);
 
             _soundEffectManager.Enabled = false;
@@ -61,8 +61,8 @@ namespace LineRunner
 
         protected override void LoadContentInner()
         {
-            BasicHouseAd houseAd = new BasicHouseAd("2c125639-a3cd-4588-ba99-bc78cc2fc2f9");
-            houseAd.LoadContent(new Sprite(base.Content.LoadTexture("BoxStrikePromo")));
+            BasicHouseAd houseAd = new BasicHouseAd("348e313f-8963-4356-a403-04785eaff9bc");
+            houseAd.LoadContent(new Sprite(base.Content.LoadTexture("FinalFightZPromo")));
             _adManager.InitializeHouseAds(houseAd);
         }
 

@@ -53,7 +53,7 @@ namespace LineRunner.Screens
             RectangleF leftButtonRect = new RectangleF(400 + (400 - (200 + 128)), 190, 128, 128);
             RectangleF rightButtonRect = new RectangleF(200, 190, 128, 128);
 
-            _restartButton = new TexturedButton(leftButtonRect, new Sprite(contentManager.LoadTexture("PauseScreen/Play")));
+            _restartButton = new TexturedButton(new Sprite(contentManager.LoadTexture("PauseScreen/Play")), leftButtonRect);
             _restartButton.Click += () =>
             {
                 _gamePlayScreen.RestartGame();
@@ -61,7 +61,7 @@ namespace LineRunner.Screens
             };
             _uiContainer.Add(_restartButton);
 
-            _mainMenuButton = new TexturedButton(rightButtonRect, new Sprite(contentManager.LoadTexture("PauseScreen/MainMenu")));
+            _mainMenuButton = new TexturedButton(new Sprite(contentManager.LoadTexture("PauseScreen/MainMenu")), rightButtonRect);
             _mainMenuButton.Click += () => LoadingScreen.Load(this.ScreenManager, false, new MainMenuScreen());
             _uiContainer.Add(_mainMenuButton);
 
@@ -100,7 +100,7 @@ namespace LineRunner.Screens
 
         private void SaveScore()
         {
-            LineRunnerSettings settings = base.Services.GetService<SettingsManager<LineRunnerSettings>>().Settings;
+            LineRunnerSettings settings = base.Services.GetService<ISettingsManager<LineRunnerSettings>>().Settings;
 
             bool isHighScore = false;
             // If the score is new high score, post it to mogade

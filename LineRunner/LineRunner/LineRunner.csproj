@@ -22,7 +22,7 @@
     <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
     <XnaWindowsPhoneManifestTemplate>Properties\WMAppManifest.xml</XnaWindowsPhoneManifestTemplate>
     <TileImage>BigGameThumbnail.png</TileImage>
-    <TileTitle>LineRunner</TileTitle>
+    <TileTitle>Doodle Run</TileTitle>
     <SupportedCultures>
     </SupportedCultures>
     <ApplicationIcon>
@@ -59,13 +59,11 @@
     <Reference Include="Microsoft.Xna.Framework.Graphics" />
     <Reference Include="Microsoft.Xna.Framework.GamerServices" />
     <Reference Include="Microsoft.Xna.Framework.Input.Touch" />
-    <Reference Include="Mogade.WindowsPhone, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\FlaiWP7\3rd Party Libraries\Mogade\Mogade.WindowsPhone.dll</HintPath>
+    <Reference Include="Mogade.WindowsPhone">
+      <HintPath>..\..\..\Flai\3rd Party Libraries\Windows Phone\Mogade\Mogade.WindowsPhone.dll</HintPath>
     </Reference>
-    <Reference Include="Mogade.WindowsPhone.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\FlaiWP7\3rd Party Libraries\Mogade\Mogade.WindowsPhone.Core.dll</HintPath>
+    <Reference Include="Mogade.WindowsPhone.Core">
+      <HintPath>..\..\..\Flai\3rd Party Libraries\Windows Phone\Mogade\Mogade.WindowsPhone.Core.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json.WindowsPhone, Version=4.0.2.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />

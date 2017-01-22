@@ -42,11 +42,11 @@ namespace LineRunner.Screens
             RectangleF leftButtonRect = new RectangleF(400 + (400 - (200 + 128)), 190, 128, 128);
             RectangleF rightButtonRect = new RectangleF(200, 190, 128, 128);
 
-            _continueButton = new TexturedButton(leftButtonRect, new Sprite(contentManager.LoadTexture("PauseScreen/Play")));
+            _continueButton = new TexturedButton(new Sprite(contentManager.LoadTexture("PauseScreen/Play")), leftButtonRect);
             _continueButton.Click += this.ExitScreen;
             _uiContainer.Add(_continueButton);
 
-            _mainMenuButton = new TexturedButton(rightButtonRect, new Sprite(contentManager.LoadTexture("PauseScreen/MainMenu")));
+            _mainMenuButton = new TexturedButton(new Sprite(contentManager.LoadTexture("PauseScreen/MainMenu")), rightButtonRect);
             _mainMenuButton.Click += () =>
             {
                 LoadingScreen.Load(this.ScreenManager, false, new MainMenuScreen());
